@@ -1,0 +1,346 @@
+<!DOCTYPE html>
+<html>
+ <head>
+  <title>Don't Forget!</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <style type="text/css">
+   * {
+    background-color: transparent;
+   }
+   .back {
+    background-color: gainsboro;
+   }
+   .interactive {
+    background-color: whitesmoke;
+   }
+   .interactive:hover {
+    background-color: white;
+   }
+   .chk-rgb {
+    background-color: #6AA32A;
+   }
+   .chk {
+    background-color: #6AA32A;
+   }
+   .chk:hover {
+    background-color: #8AC34A;
+   }
+   .rm {
+    background-color: #AD3C3C;
+   }
+   .rm:hover {
+    background-color: #CD5C5C;
+   }
+   .button {
+    min-height: 64px;
+    min-width: 64px;
+   }
+   .container {
+    display: table;
+   }
+   .contained {
+    display: table-cell;
+    vertical-align: middle;
+   }
+   .title {
+    color: gainsboro;
+    font-family: "Arial Black", Gadget, sans-serif;
+    font-size: 32px;
+    font-variant: small-caps;
+    font-weight: bold;
+   }
+   .checkbox {
+    opacity: 0;
+    position: absolute;
+    width: 0;
+   }
+   .submit {
+    opacity: 0;
+    position: absolute;
+    width: 0;
+   }
+   .hidden {
+    display: none;
+   }
+   .full-heigth {
+    height: 100%;
+   }
+   .full-width {
+    width: 100%;
+   }
+
+   body {
+    margin: 0;
+   }
+   .img {
+    background:
+     url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAYAAAABAAgMAAABuNkgsAAAADFBMVEVlLWdpCQkmYAbc3NzK645SAAAAAXRSTlMAQObYZgAAAXBJREFUWMPtlzFuwzAMRWULAQqjgKbsnT31BsoROtT3yVEyGjqFj6QDGGBDJbFJLq5BxpP+Jljhg/hkWXGupqampuaweAA2bobBGDAFDricDl6BeO5S2lM+QMn0Gp+GkstewLcYf1kDZjEedyzyPwAv5rTJeAVhrVDSpastIEJm4z7dbAEAs5gzrpsUQzcpZqeDe5XMFSwrsAEE4A66tDjw4HP0FND8nJsdgM+HgmXOx0NBclaAKBT0XIEegL2hCrA3RMEmAIBLSs+sv89MQYuliQI1IGBziIIOm0MUqAGlNlWAj4gCgxXARBVgd6gCAweQ6VuAxakCNQDbE+k+u7eHKtADIj6d6TGXqAI9oJyWmZ0SVIH+RfPsMC4SqAI9wLGz8rlGZwmI4lvQMwUGgCC+BR1TYADw4lvQMgUGgM1NoAZEcSfqR2NA4BcK192MAX4Sl66rMWDrbv12gMW1RQdQBsRxW+r/1n+WNTU1NYflD1F2B/Q+ROgGAAAAAElFTkSuQmCC)
+     no-repeat
+     center
+    ;
+    height: 64px;
+    width: 64px;
+   }
+   .txt {
+    padding: 8px;
+    word-wrap: break-word;
+   }
+
+   .header {
+    height: 64px;
+    position: fixed;
+    top: 0;
+    z-index: 1;
+   }
+   .header .txt { 
+    padding-left: 16px;
+   }
+   .header .add .img {
+    background-position: -256px 0px;
+   }
+   .header .rmv .img {
+    background-position: -128px 0px;
+   }
+   .header .add input:checked ~ .img {
+    background-position: -320px 0px;
+   }
+   .header .rmv input:checked ~ .img {
+    background-position: -192px 0px;
+   }
+
+   .in {
+    height: 64px;
+    position: fixed;
+    top: 64px;
+    z-index: 1;
+   }
+   .in .container {
+   }
+   .in .container .item {
+    padding-left: 16px;
+    padding-right: 24px;
+   }
+   .in .container .item textarea {
+    padding: 8px;
+    resize: none;
+   }
+   .in .container .ctrl input:active ~ .img {
+    background-position: -64px 0px;
+   }
+   .in .container .ctrl .img {
+    background-position: 0px 0px;
+   }
+
+   .list {
+    margin: 16px;
+    margin-top: 80px; /* 64px + 64px + 16 px margin */
+    z-index: 0;
+   }
+   .list .check, .list .delete {
+    display: block;
+    margin-bottom: 16px;
+    position: relative;
+   }
+   .list .check input, .list .delete input {
+    opacity: 0;
+    position: absolute;
+    width: 0;
+   }
+   .list .check .data .ctrl .img {
+    background-position: 0px 0px;
+   }
+   .list .delete .data .ctrl .img {
+    background-position: -128px 0px;
+   }
+   .list .check input:checked ~ .data {
+    background-color: #6AA32A;
+   }
+   .list .check input:checked ~ .data:hover {
+    background-color: #8AC34A;
+   }
+   .list .delete input:checked ~ .data {
+    background-color: #AD3C3C;
+   }
+   .list .delete input:checked ~ .data:hover {
+    background-color: #CD5C5C;
+   }
+   .list .check input:checked ~ .data .ctrl .img {
+    background-position: -64px 0px;
+   }
+   .list .delete input:checked ~ .data .ctrl .img {
+    background-position: -192px 0px;
+   }
+  </style>
+ </head>
+ <body class="back">
+  <div class="header chk-rgb container full-width">
+   <div class="txt contained title full-width" id="title">
+    <noscript>Needs JavaScript!</noscript>
+    <script>document.getElementById("title").innerHTML = "Don't forget!";</script>
+   </div>
+   <label class="add chk contained button">
+    <input class="checkbox" type="checkbox" id="add" onchange="toggle_input(this)">
+    <div class="img"></div>
+   </label>
+   <label class="rmv rm contained button">
+    <input class="checkbox" type="checkbox" id="rm" onchange="toggle_mode(this, storage)">
+    <div class="img"></div>
+   </label>
+  </div>
+  <div class="in chk full-width hidden" id="in">
+   <div class="container">
+    <div class="item full-width contained">
+     <textarea class="full-height full-width interactive" id="new" name="new" placeholder="Add item to list."></textarea>
+    </div>
+    <label class="ctrl contained button">
+     <input class="submit" type="button" onclick="add_item(this, storage)">
+     <div class="img"></div>
+    </label>
+   </div>
+  </div>
+  <div class="list" id="list">
+   <!-- Filled by javascript -->
+  </div>
+  <script>
+   /*
+    JSON schema for validating data storage JSON:
+
+    {
+    	"$schema": "http://json-schema.org/draft/2019-09/schema",
+	"description": "The Don't Forget app shopping list object, containing items",
+	"definitions": {
+		"item": {
+			"description": "The Don't Forget app shopping list item object",
+			"type": "object",
+			"properties": {
+				"txt": {
+					"description": "Text of the shopping list item, set by user",
+					"type": "string"
+				},
+				"check": {
+					"description": "Whether the item is selected in shopping mode list",
+					"type": "boolean"
+				},
+				"delete": {
+					"description": "Whether the item is selected in deletion mode list",
+					"type": "boolean"
+				}
+			},
+			"required": [ "txt", "check", "delete" ]
+		}
+	},
+	"type": "object",
+	"properties": {
+		"items": {
+			"description": "List of items to shop for",
+			"type": "array",
+			"items": {
+				"$ref": "#/definitions/item"
+			}
+		}
+	},
+	"required": [ "items" ]
+    }
+    */
+   var storage = {
+    "items": [
+    ]
+   };
+
+   function mode() {
+    return document.getElementById("rm").checked ? "delete" : "check";
+   }
+
+   function itemify(id, item) {
+     var img = document.createElement("div");
+     img.className = "img";
+     var ctrl = document.createElement("div");
+     ctrl.className = "ctrl contained";
+     ctrl.appendChild(img);
+     var txt = document.createElement("div");
+     txt.className = "txt contained full-width";
+     txt.innerHTML = item.txt;
+     var data = document.createElement("div");
+     data.className = "data container";
+     data.appendChild(txt);
+     data.appendChild(ctrl);
+     var input = document.createElement("input");
+     input.type = "checkbox";
+     input.className = "checkbox";
+     input.name = id;
+     input.addEventListener(
+      "change",
+      function() { toggle_item(this, storage); },
+      false
+     );
+     input.checked = item[mode()];
+     var label = document.createElement("label");
+     label.className = mode() + " interactive button";
+     label.appendChild(input);
+     label.appendChild(data);
+     return label;
+   }
+
+   function show(list) {
+    var parent = document.getElementById("list");
+    var original = parent.style.display;
+    parent.style.display = "none";
+    while (parent.firstChild) { parent.removeChild(parent.firstChild); }
+    for (var item = 0; item < list.items.length; ++item) {
+     parent.appendChild(itemify(item, list.items[item]));
+    }
+    parent.style.display = original;
+   }
+
+   function toggle_input(checkbox) {
+    document.getElementById("in").style.display =
+     checkbox.checked ? "initial" : "none";
+    document.getElementById("list").style.marginTop =
+     checkbox.checked ? "144px" : "80px";
+   }
+
+   function dump(list) {
+    /* iterate backwards so it won't be affected by splice */
+    for (var item = list.items.length; item > 0; --item) {
+     if (list.items[item - 1].delete) { list.items.splice(item - 1, 1); }
+    }
+   }
+
+   function toggle_mode(checkbox, list) {
+    var parent = document.getElementById("list");
+    var original = parent.style.display;
+    parent.style.display = "none";
+    dump(list);
+    /* toggle only remaining elements */
+    var collection = /* reverse of mode() */
+     document.getElementsByClassName(checkbox.checked ? "check" : "delete");
+    while (0 < collection.length) {
+     collection[0].className = mode() + " interactive button";
+    }
+    parent.style.display = original;
+    show(list);
+   }
+
+   function add_item(button, list) {
+    var input = document.getElementById("new");
+    if ("" != input.value) { 
+     list.items.push(
+      {
+       "txt": document.getElementById("new").value,
+       "check": false,
+       "delete": false
+      }
+     );
+     document.getElementById("new").value = "";
+     show(list);
+    }
+   }
+
+   function toggle_item(checkbox, list) {
+    list.items[checkbox.name][mode()] = checkbox.checked;
+   }
+
+   show(storage);
+  </script>
+ </body>
+</html>
