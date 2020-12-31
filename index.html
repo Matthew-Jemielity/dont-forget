@@ -85,6 +85,11 @@
     padding: 8px;
     word-wrap: break-word;
    }
+   .counter {
+    background-color: white;
+    min-width: 64px;
+    text-align: center;
+   }
 
    .header {
     height: 64px;
@@ -257,11 +262,15 @@
      var ctrl = document.createElement("div");
      ctrl.className = "ctrl contained";
      ctrl.appendChild(img);
+     var counter = document.createElement("div");
+     counter.className = "contained counter";
+     counter.innerHTML = (id + 1);
      var txt = document.createElement("div");
      txt.className = "txt contained full-width";
      txt.innerHTML = item.txt;
      var data = document.createElement("div");
      data.className = "data container";
+     data.appendChild(counter);
      data.appendChild(txt);
      data.appendChild(ctrl);
      var input = document.createElement("input");
@@ -340,6 +349,8 @@
     list.items[checkbox.name][mode()] = checkbox.checked;
    }
 
+   document.getElementById("add").checked = false;
+   document.getElementById("rm").checked = false;
    show(storage);
   </script>
  </body>
