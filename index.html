@@ -31,6 +31,9 @@
    .rm:hover {
     background-color: #CD5C5C;
    }
+   .blocky {
+    display: block;
+   }
    .button {
     min-height: 64px;
     min-width: 64px;
@@ -191,11 +194,11 @@
    </div>
    <label class="add chk contained button">
     <input class="checkbox" type="checkbox" id="add" onchange="toggle_input(this)">
-    <div class="img"></div>
+    <span class="img blocky"></span>
    </label>
    <label class="rmv rm contained button">
     <input class="checkbox" type="checkbox" id="rm" onchange="toggle_mode(this, storage)">
-    <div class="img"></div>
+    <span class="img blocky"></span>
    </label>
   </div>
   <div class="in chk full-width hidden" id="in">
@@ -205,7 +208,7 @@
     </div>
     <label class="ctrl contained button">
      <input class="submit" type="button" onclick="add_item(this, storage)">
-     <div class="img"></div>
+     <span class="img blocky"></span>
     </label>
    </div>
   </div>
@@ -263,19 +266,19 @@
    }
 
    function itemify(id, item) {
-     var img = document.createElement("div");
-     img.className = "img";
-     var ctrl = document.createElement("div");
-     ctrl.className = "ctrl contained";
+     var img = document.createElement("span");
+     img.className = "img blocky";
+     var ctrl = document.createElement("span");
+     ctrl.className = "ctrl contained blocky";
      ctrl.appendChild(img);
-     var counter = document.createElement("div");
-     counter.className = "contained counter";
+     var counter = document.createElement("span");
+     counter.className = "contained counter blocky";
      counter.innerHTML = (id + 1);
-     var txt = document.createElement("div");
-     txt.className = "txt contained full-width";
+     var txt = document.createElement("span");
+     txt.className = "txt contained full-width blocky";
      txt.innerHTML = item.txt;
-     var data = document.createElement("div");
-     data.className = "data container";
+     var data = document.createElement("span");
+     data.className = "data container blocky";
      data.appendChild(counter);
      data.appendChild(txt);
      data.appendChild(ctrl);
