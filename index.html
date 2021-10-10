@@ -187,10 +187,17 @@
   </style>
  </head>
  <body class="back">
+  <script>
+   /* global variables for title div changes */
+   var global_title_default = "Don't forget!"
+   var global_title_done = "All done!"
+   /* value to add to list.checked based on mode and item checkbox state */
+   var global_checking_logic = { "check": [-1, 1], "delete": [0, 0] };
+  </script>
   <div class="header chk-rgb container full-width">
    <div class="txt contained title full-width" id="title">
     <noscript>Needs JavaScript!</noscript>
-    <script>document.getElementById("title").innerHTML = "Don't forget!";</script>
+    <script>document.getElementById("title").innerHTML = global_title_default;</script>
    </div>
    <label class="add chk contained button">
     <input class="checkbox" type="checkbox" id="add" onchange="toggle_input(this)">
@@ -245,6 +252,10 @@
 	},
 	"type": "object",
 	"properties": {
+	 	"checked": {
+	 		"description": "Trace how many items in list are checked",
+	 		"type": "integer"
+	 	},
 		"items": {
 			"description": "List of items to shop for",
 			"type": "array",
@@ -253,10 +264,11 @@
 			}
 		}
 	},
-	"required": [ "items" ]
+	"required": [ "checked", "items" ]
     }
     */
    var storage = {
+    "checked": 0,
     "items": [
     ]
    };
@@ -304,10 +316,16 @@
     var original = parent.style.display;
     parent.style.display = "none";
     while (parent.firstChild) { parent.removeChild(parent.firstChild); }
+    list.checked = 0;
     for (var item = 0; item < list.items.length; ++item) {
      parent.appendChild(itemify(item, list.items[item]));
+     list.checked += list.items[item].check;
     }
     parent.style.display = original;
+    /* handle all items being checked */
+    var title = document.getElementById("title");
+    var all = ((list.items.length > 0) && (list.items.length == list.checked));
+    title.innerHTML = all ? global_title_done : global_title_default;
    }
 
    function toggle_input(checkbox) {
@@ -356,6 +374,11 @@
 
    function toggle_item(checkbox, list) {
     list.items[checkbox.name][mode()] = checkbox.checked;
+    /* handle all items being checked */
+    list.checked += global_checking_logic[mode()][checkbox.checked ? 1 : 0]
+    var title = document.getElementById("title");
+    var all = ((list.items.length > 0) && (list.items.length == list.checked));
+    title.innerHTML = all ? global_title_done : global_title_default;
    }
 
    document.getElementById("add").checked = false;
