@@ -211,7 +211,7 @@
   <div class="in chk full-width hidden" id="in">
    <div class="container">
     <div class="item full-width contained">
-     <textarea class="full-height full-width interactive" id="new" name="new" placeholder="Add item to list."></textarea>
+     <textarea class="full-height full-width interactive" id="new" name="new" placeholder="Add item to list, one per line."></textarea>
     </div>
     <label class="ctrl contained button">
      <input class="submit" type="button" value="submit" onclick="add_item(this, storage)">
@@ -359,14 +359,19 @@
 
    function add_item(button, list) {
     var input = document.getElementById("new");
-    if ("" != input.value) { 
-     list.items.push(
-      {
-       "txt": document.getElementById("new").value,
-       "check": false,
-       "delete": false
+    if ("" != input.value) {
+     var items = input.value.split(/\r?\n/);
+     for (var item = 0; item < items.length; ++item) {
+      if ("" != items[item]) {
+       list.items.push(
+        {
+         "txt": items[item],
+         "check": false,
+         "delete": false
+        }
+       );
       }
-     );
+     }
      document.getElementById("new").value = "";
      show(list);
     }
