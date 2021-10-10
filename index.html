@@ -358,6 +358,20 @@
     show(list);
    }
 
+   function sanitize(string) {
+    const map = {
+     '&': '&amp;',
+     '<': '&lt;',
+     '>': '&gt;',
+     '`': '&grave;',
+     '"': '&quot;',
+     "'": '&#x27;',
+     "/": '&#x2F;',
+    };
+    const reg = /[&<>"'/]/ig;
+    return string.replace(reg, (match)=>(map[match])).replace(/\s+/g,' ');
+   }
+
    function add_item(button, list) {
     var input = document.getElementById("new");
     if ("" != input.value) {
@@ -366,7 +380,7 @@
       if ("" != items[item]) {
        list.items.push(
         {
-         "txt": items[item],
+         "txt": sanitize(items[item]),
          "check": false,
          "delete": false
         }
