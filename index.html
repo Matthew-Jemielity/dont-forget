@@ -282,11 +282,14 @@
     }
    */
 
-   var storage = { "checked": 0, "items": [] };
+   var storage = null;
    if (typeof(Storage) !== "undefined") {
     try {
      storage = JSON.parse(localStorage.getItem("storage"));
     } catch (anything) { /* do nothing */ }
+   }
+   if (null == storage) {
+    storage = { "checked": 0, "items": [] };
    }
 
    function sanitize(string) {
@@ -456,11 +459,14 @@
    }
 
    document.getElementById("add").checked = false;
+   var rm = null;
    if (typeof(Storage) !== "undefined") {
-    document.getElementById("rm").checked = JSON.parse(localStorage.getItem("rm"));
-   } else {
-    document.getElementById("rm").checked = false;
+    try {
+     rm = JSON.parse(localStorage.getItem("rm"));
+    } catch (anything) { /* do nothing */ }
    }
+   if (null == rm) { rm = false; }
+   document.getElementById("rm").checked = rm;
    document.getElementById("list").firstElementChild.className = item_class();
    show(storage);
   </script>
