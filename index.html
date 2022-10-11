@@ -193,10 +193,7 @@
  <body class="back">
   <script>
    /* global variables for title div changes */
-   var global_title = {
-    false: "Don't forget!",
-    true: "All done!"
-   };
+   var global_title = { false: "Don't forget!", true: "All done!" };
    /* value to add to list.checked based on mode and item checkbox state */
    var global_checking_logic = { "check": [-1, 1], "delete": [0, 0] };
   </script>
@@ -283,12 +280,14 @@
 	},
 	"required": [ "checked", "items" ]
     }
-    */
-   var storage = {
-    "checked": 0,
-    "items": [
-    ]
-   };
+   */
+
+   var storage = { "checked": 0, "items": [] };
+   if (typeof(Storage) !== "undefined") {
+    try {
+     storage = JSON.parse(localStorage.getItem("storage"));
+    } catch (anything) { /* do nothing */ }
+   }
 
    function sanitize(string) {
     const map = {
@@ -364,6 +363,12 @@
      return label;
    }
 
+   function save(list) {
+    if (typeof(Storage) !== "undefined") {
+     localStorage.setItem("storage", JSON.stringify(list));
+    }
+   }
+
    function show(list) {
     var parent = document.getElementById("list");
     var original = parent.style.display;
@@ -378,6 +383,7 @@
     }
     parent.style.display = original;
     title.innerHTML = global_title[all(list)];
+    save(list);
    }
 
    function dump(list) {
@@ -385,6 +391,7 @@
     for (var item = list.items.length; item > 0; --item) {
      if (list.items[item - 1].delete) { list.items.splice(item - 1, 1); }
     }
+    save(list);
    }
 
    function add_item(button, list) {
@@ -413,6 +420,9 @@
    }
 
    function toggle_mode(checkbox, list) {
+    if (typeof(Storage) !== "undefined") {
+     localStorage.setItem("rm", JSON.stringify(checkbox.checked));
+    }
     document.getElementById("list").style.marginTop = list_margin();
     /* always uncheck list header */
     document.getElementById("#").checked = false;
@@ -435,6 +445,7 @@
     list.items[item][mode()] = state;
     list.checked += global_checking_logic[mode()][state ? 1 : 0];
     title.innerHTML = global_title[all(list)];
+    save(list);
    }
 
    function toggle_all(checkbox, list) {
@@ -445,7 +456,12 @@
    }
 
    document.getElementById("add").checked = false;
-   document.getElementById("rm").checked = false;
+   if (typeof(Storage) !== "undefined") {
+    document.getElementById("rm").checked = JSON.parse(localStorage.getItem("rm"));
+   } else {
+    document.getElementById("rm").checked = false;
+   }
+   document.getElementById("list").firstElementChild.className = item_class();
    show(storage);
   </script>
  </body>
