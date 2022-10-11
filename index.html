@@ -17,7 +17,7 @@
    .interactive:hover {
     background-color: white;
    }
-   .chk-rgb {
+   .chk-nohover {
     background-color: #6AA32A;
    }
    .chk {
@@ -25,6 +25,9 @@
    }
    .chk:hover {
     background-color: #8AC34A;
+   }
+   .rm-nohover {
+    background-color: #AD3C3C;
    }
    .rm {
     background-color: #AD3C3C;
@@ -142,7 +145,7 @@
 
    .list {
     margin: 16px;
-    margin-top: 80px; /* 64px + 64px + 16 px margin */
+    margin-top: 80px; /* 64px + 16 px margin */
     z-index: 0;
    }
    .list .check, .list .delete {
@@ -190,15 +193,17 @@
  <body class="back">
   <script>
    /* global variables for title div changes */
-   var global_title_default = "Don't forget!"
-   var global_title_done = "All done!"
+   var global_title = {
+    false: "Don't forget!",
+    true: "All done!"
+   };
    /* value to add to list.checked based on mode and item checkbox state */
    var global_checking_logic = { "check": [-1, 1], "delete": [0, 0] };
   </script>
-  <div class="header chk-rgb container full-width">
+  <div class="header chk-nohover container full-width">
    <div class="txt contained title full-width" id="title">
-    <noscript>Needs JavaScript!</noscript>
-    <script>document.getElementById("title").innerHTML = global_title_default;</script>
+    <noscript>Needs JavaScript to work!</noscript>
+    <script>document.getElementById("title").innerHTML = global_title[false];</script>
    </div>
    <label class="add chk contained button">
     <input class="checkbox" type="checkbox" id="add" onchange="toggle_input(this)">
@@ -212,7 +217,7 @@
   <div class="in chk full-width hidden" id="in">
    <div class="container">
     <div class="item full-width contained">
-     <textarea class="full-height full-width interactive" id="new" name="new" placeholder="Add item to list, one per line."></textarea>
+     <textarea class="full-height full-width interactive" id="new" name="new" placeholder="Add items to list, one per line."></textarea>
     </div>
     <label class="ctrl contained button">
      <input class="submit" type="button" value="submit" onclick="add_item(this, storage)">
@@ -221,6 +226,17 @@
    </div>
   </div>
   <div class="list" id="list">
+   <label class="check interactive button">
+    <input type="checkbox" class="checkbox" id="#" name="#" onchange="toggle_all(this, storage)">
+     <span class="data container blocky">
+      <span class="contained counter blocky">#</span>
+      <span class="txt contained full-width blocky">Items</span>
+      <span class="ctrl contained blocky">
+       <span class="img blocky">
+      </span>
+     </span>
+    </span>
+   </label>
    <!-- Filled by javascript -->
   </div>
   <script>
@@ -274,8 +290,44 @@
     ]
    };
 
+   function sanitize(string) {
+    const map = {
+     '&': '&amp;',
+     '<': '&lt;',
+     '>': '&gt;',
+     '`': '&grave;',
+     '"': '&quot;',
+     "'": '&#x27;',
+     "/": '&#x2F;',
+    };
+    const reg = /[&<>"'/]/ig;
+    return string.replace(reg, (match)=>(map[match])).replace(/\s+/g,' ');
+   }
+
+   function unhide(state) {
+    return state ? "initial" : "none";
+   }
+
+   function list_margin() {
+    var additional_elements_visible =
+     (
+      document.getElementById("add").checked
+     );
+    return additional_elements_visible ? "144px" : "80px";
+   }
+
    function mode() {
     return document.getElementById("rm").checked ? "delete" : "check";
+   }
+
+   function item_class() {
+    return mode() + " interactive button";
+   }
+
+   function all(list) {
+    var title = document.getElementById("title");
+    var all = ((list.items.length > 0) && (list.items.length == list.checked));
+    return all;
    }
 
    function itemify(id, item) {
@@ -301,12 +353,12 @@
      input.name = id;
      input.addEventListener(
       "change",
-      function() { toggle_item(this, storage); },
+      function() { toggle(this.name, storage); },
       false
      );
      input.checked = item[mode()];
      var label = document.createElement("label");
-     label.className = mode() + " interactive button";
+     label.className = item_class();
      label.appendChild(input);
      label.appendChild(data);
      return label;
@@ -316,24 +368,16 @@
     var parent = document.getElementById("list");
     var original = parent.style.display;
     parent.style.display = "none";
-    while (parent.firstChild) { parent.removeChild(parent.firstChild); }
+    while (1 < parent.childElementCount) {
+     parent.removeChild(parent.lastChild);
+    }
     list.checked = 0;
     for (var item = 0; item < list.items.length; ++item) {
      parent.appendChild(itemify(item, list.items[item]));
      list.checked += list.items[item].check;
     }
     parent.style.display = original;
-    /* handle all items being checked */
-    var title = document.getElementById("title");
-    var all = ((list.items.length > 0) && (list.items.length == list.checked));
-    title.innerHTML = all ? global_title_done : global_title_default;
-   }
-
-   function toggle_input(checkbox) {
-    document.getElementById("in").style.display =
-     checkbox.checked ? "initial" : "none";
-    document.getElementById("list").style.marginTop =
-     checkbox.checked ? "144px" : "80px";
+    title.innerHTML = global_title[all(list)];
    }
 
    function dump(list) {
@@ -341,35 +385,6 @@
     for (var item = list.items.length; item > 0; --item) {
      if (list.items[item - 1].delete) { list.items.splice(item - 1, 1); }
     }
-   }
-
-   function toggle_mode(checkbox, list) {
-    var parent = document.getElementById("list");
-    var original = parent.style.display;
-    parent.style.display = "none";
-    dump(list);
-    /* toggle only remaining elements */
-    var collection = /* reverse of mode() */
-     document.getElementsByClassName(checkbox.checked ? "check" : "delete");
-    while (0 < collection.length) {
-     collection[0].className = mode() + " interactive button";
-    }
-    parent.style.display = original;
-    show(list);
-   }
-
-   function sanitize(string) {
-    const map = {
-     '&': '&amp;',
-     '<': '&lt;',
-     '>': '&gt;',
-     '`': '&grave;',
-     '"': '&quot;',
-     "'": '&#x27;',
-     "/": '&#x2F;',
-    };
-    const reg = /[&<>"'/]/ig;
-    return string.replace(reg, (match)=>(map[match])).replace(/\s+/g,' ');
    }
 
    function add_item(button, list) {
@@ -392,13 +407,41 @@
     }
    }
 
-   function toggle_item(checkbox, list) {
-    list.items[checkbox.name][mode()] = checkbox.checked;
-    /* handle all items being checked */
-    list.checked += global_checking_logic[mode()][checkbox.checked ? 1 : 0]
-    var title = document.getElementById("title");
-    var all = ((list.items.length > 0) && (list.items.length == list.checked));
-    title.innerHTML = all ? global_title_done : global_title_default;
+   function toggle_input(checkbox) {
+    document.getElementById("in").style.display = unhide(checkbox.checked);
+    document.getElementById("list").style.marginTop = list_margin();
+   }
+
+   function toggle_mode(checkbox, list) {
+    document.getElementById("list").style.marginTop = list_margin();
+    /* always uncheck list header */
+    document.getElementById("#").checked = false;
+    var parent = document.getElementById("list");
+    var original = parent.style.display;
+    parent.style.display = "none";
+    dump(list);
+    /* toggle only remaining elements */
+    var collection = /* reverse of mode() */
+     document.getElementsByClassName(checkbox.checked ? "check" : "delete");
+    while (0 < collection.length) {
+     collection[0].className = item_class();
+    }
+    parent.style.display = original;
+    show(list);
+   }
+
+   function toggle(item, list) {
+    var state = !list.items[item][mode()];
+    list.items[item][mode()] = state;
+    list.checked += global_checking_logic[mode()][state ? 1 : 0];
+    title.innerHTML = global_title[all(list)];
+   }
+
+   function toggle_all(checkbox, list) {
+    for (var item = 0; item < list.items.length; ++item) {
+     toggle(item, list)
+    }
+    show(list)
    }
 
    document.getElementById("add").checked = false;
